@@ -11,10 +11,11 @@ class Team(Base):
     manager_name = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # A team can have many players, and play many matches
-    players = relationship("Player", back_populates="team")
-    home_matches = relationship("Match", foreign_keys="[Match.home_team_id]", back_populates="home_team")
-    away_matches = relationship("Match", foreign_keys="[Match.away_team_id]", back_populates="away_team")
+    # Relationships to access team data
+    players = relationship("Player", back_populates="team", cascade="all, delete-orphan")
+    # Link home/away matches so the team knows all its games
+    home_matches = relationship("Match", foreign_keys="[Match.home_team_id]", back_populates="home_team", cascade="all, delete-orphan")
+    away_matches = relationship("Match", foreign_keys="[Match.away_team_id]", back_populates="away_team", cascade="all, delete-orphan")
 
 class Player(Base):
     __tablename__ = "players"
@@ -24,21 +25,23 @@ class Player(Base):
     position = Column(String)
     squad_number = Column(Integer)
     
-    # Foreign Key strictly links this player to a specific team
+    # Foreign Key links player to a specific team
     team_id = Column(Integer, ForeignKey("teams.id"))
-
     team = relationship("Team", back_populates="players")
 
 class Match(Base):
     __tablename__ = "matches"
 
     id = Column(Integer, primary_key=True, index=True)
+    # Foreign Keys link to the teams table
     home_team_id = Column(Integer, ForeignKey("teams.id"))
     away_team_id = Column(Integer, ForeignKey("teams.id"))
     
-    home_score = Column(Integer, default=0)
-    away_score = Column(Integer, default=0)
-    status = Column(String, default="Scheduled") # Options: Scheduled, Active, Completed
+    # Standardized names: match these with your Pydantic schemas
+    home_goals = Column(Integer, default=0)
+    away_goals = Column(Integer, default=0)
+    status = Column(String, default="Scheduled") 
 
+    # Relationships link to the Team model for easy access to team objects
     home_team = relationship("Team", foreign_keys=[home_team_id], back_populates="home_matches")
     away_team = relationship("Team", foreign_keys=[away_team_id], back_populates="away_matches")

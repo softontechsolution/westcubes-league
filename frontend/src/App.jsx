@@ -1,6 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Teams from './pages/Teams';
+import Standings from './pages/Standings';
+import Matches from './pages/Matches';
+import Players from './pages/Players';
+import TeamDetails from './pages/TeamDetails';
 
 function App() {
   return (
@@ -26,6 +30,8 @@ function App() {
                 <div className="ml-10 flex items-baseline space-x-6">
                   <Link to="/" className="hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</Link>
                   <Link to="/teams" className="hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition-colors">Manage Teams</Link>
+                  <Link to="/matches" className="hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition-colors">Record Match</Link>
+                  <Link to="/players" className="hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition-colors">Add Players</Link>
                   <Link to="/standings" className="hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition-colors">Standings</Link>
                 </div>
               </div>
@@ -38,8 +44,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/teams" element={<Teams />} />
-            {/* We will build the Standings component later */}
-            <Route path="/standings" element={<div className="text-center mt-20 text-gray-400">Standings coming soon...</div>} />
+            <Route path="/matches" element={<Matches />} />
+            <Route path="/players" element={<Players />} />
+            <Route path="/standings" element={<Standings />} />
+            <Route path="/teams/:team_id" element={<TeamDetails />} />
           </Routes>
         </main>
         
