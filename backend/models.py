@@ -40,8 +40,18 @@ class Match(Base):
     # Standardized names: match these with your Pydantic schemas
     home_goals = Column(Integer, default=0)
     away_goals = Column(Integer, default=0)
-    status = Column(String, default="Scheduled") 
+    status = Column(String, default="Scheduled")
+    match_date = Column(String, nullable=True)
 
     # Relationships link to the Team model for easy access to team objects
     home_team = relationship("Team", foreign_keys=[home_team_id], back_populates="home_matches")
     away_team = relationship("Team", foreign_keys=[away_team_id], back_populates="away_matches")
+    
+class Goal(Base):
+    __tablename__ = "goals"
+    id = Column(Integer, primary_key=True, index=True)
+    match_id = Column(Integer, ForeignKey("matches.id"))
+    team_id = Column(Integer, ForeignKey("teams.id"))
+    scorer_id = Column(Integer, ForeignKey("players.id"))
+    assist_id = Column(Integer, ForeignKey("players.id"), nullable=True)
+    minute = Column(Integer)

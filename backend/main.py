@@ -76,8 +76,20 @@ def list_teams(db: Session = Depends(get_db)):
 class MatchCreate(BaseModel):
     home_team_id: int
     away_team_id: int
-    home_goals: int
-    away_goals: int
+    home_goals: int = 0          # Default to 0 for future matches
+    away_goals: int = 0          # Default to 0 for future matches
+    match_date: Optional[str] = None  # NEW: Store the date/time
+    status: str = "Scheduled"       # NEW: Default status
+    
+# =====================================================================
+# MATCH UPDATE SCHEMA (Data Validation)
+# Defines the fields that can be updated during or after a match.
+# All fields are Optional so we can update just one field at a time.
+# =====================================================================
+class MatchUpdate(BaseModel):
+    home_goals: Optional[int] = None
+    away_goals: Optional[int] = None
+    status: Optional[str] = None
 
 # =====================================================================
 # MATCH ENDPOINT (Business Logic)
@@ -96,7 +108,9 @@ def record_match(match: MatchCreate, db: Session = Depends(get_db)):
         home_team_id=match.home_team_id,
         away_team_id=match.away_team_id,
         home_goals=match.home_goals,
-        away_goals=match.away_goals
+        away_goals=match.away_goals,
+        match_date=match.match_date, # Map the date from frontend
+        status=match.status
     )
     
     # 3. Stage, commit, and refresh the database transaction
@@ -106,6 +120,43 @@ def record_match(match: MatchCreate, db: Session = Depends(get_db)):
     
     # 4. Return the successfully saved database record back to the frontend
     return new_match
+
+# =====================================================================
+# MATCH UPDATE ENDPOINT (Business Logic)
+# Handles PATCH requests to update a match's score or status in real-time.
+# =====================================================================
+@app.patch("/matches/{match_id}")
+def update_match(match_id: int, match_update: MatchUpdate, db: Session = Depends(get_db)):
+    
+    # 1. Find the existing match in the database
+    db_match = db.query(models.Match).filter(models.Match.id == match_id).first()
+    
+    # 2. If it doesn't exist, throw a 404 error
+    if not db_match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    
+    # 3. Update only the fields that were actually provided in the request
+    if match_update.home_goals is not None:
+        db_match.home_goals = match_update.home_goals
+        
+    if match_update.away_goals is not None:
+        db_match.away_goals = match_update.away_goals
+        
+    if match_update.status is not None:
+        db_match.status = match_update.status
+        
+    # 4. Commit the changes and refresh the instance
+    db.commit()
+    db.refresh(db_match)
+    
+    # 5. Return the updated match back to the frontend
+    return db_match
+
+@app.get("/matches/")
+def get_matches(db: Session = Depends(get_db)):
+    # This queries all matches from your database
+    matches = db.query(models.Match).all()
+    return matches
 
 # =====================================================================
 # STANDINGS ENDPOINT (Business Logic & Data Aggregation)
@@ -131,6 +182,12 @@ def get_standings(db: Session = Depends(get_db)):
     
     # 3. Process every match to calculate wins, losses, and goals
     for match in matches:
+        # -----------------------------------------------------------------
+        # NEW ADJUSTMENT: Ignore unplayed/scheduled matches
+        # -----------------------------------------------------------------
+        if match.status == "Scheduled":
+            continue
+        
         home = standings_data.get(match.home_team_id)
         away = standings_data.get(match.away_team_id)
         
@@ -201,6 +258,15 @@ def register_player(player: PlayerCreate, db: Session = Depends(get_db)):
     
     return new_player
 
+# =====================================================================
+# GET ALL PLAYERS ENDPOINT
+# Fetches every player across all teams globally.
+# =====================================================================
+@app.get("/players/")
+def list_players(db: Session = Depends(get_db)):
+    # Query the database to get all records inside the players table
+    players = db.query(models.Player).all()
+    return players
 # =====================================================================
 # GET PLAYERS BY TEAM ENDPOINT
 # Fetches players specifically linked to a given team_id.
@@ -282,3 +348,95 @@ def update_team(team_id: int, team_update: TeamUpdate, db: Session = Depends(get
     db.commit()
     db.refresh(db_team)
     return db_team
+
+class GoalCreate(BaseModel):
+    match_id: int
+    scorer_id: int
+    assist_id: Optional[int] = None
+    minute: int
+    team_id: int
+    
+@app.post("/goals/")
+def record_goal(goal: GoalCreate, db: Session = Depends(get_db)):
+    # 1. Create the Goal record
+    new_goal = models.Goal(
+        match_id=goal.match_id,
+        team_id=goal.team_id,
+        scorer_id=goal.scorer_id,
+        assist_id=goal.assist_id,
+        minute=goal.minute
+    )
+    
+    # 2. Fetch the corresponding Match to update the score
+    match = db.query(models.Match).filter(models.Match.id == goal.match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+
+    # 3. Increment the score based on which team scored
+    if goal.team_id == match.home_team_id:
+        match.home_goals += 1
+    elif goal.team_id == match.away_team_id:
+        match.away_goals += 1
+    else:
+        raise HTTPException(status_code=400, detail="Team did not play in this match")
+
+    # 4. Save everything
+    db.add(new_goal)
+    db.commit()
+    db.refresh(new_goal)
+    
+    return {"message": "Goal logged successfully", "goal": new_goal}
+
+# =====================================================================
+# GET ALL GOALS ENDPOINT
+# =====================================================================
+@app.get("/goals/")
+def list_goals(db: Session = Depends(get_db)):
+    return db.query(models.Goal).all()
+
+# =====================================================================
+# PATCH: UPDATE AN EXISTING GOAL (Fix typos/scorers)
+# =====================================================================
+class GoalUpdate(BaseModel):
+    scorer_id: Optional[int] = None
+    assist_id: Optional[int] = None
+    minute: Optional[int] = None
+
+@app.patch("/goals/{goal_id}")
+def update_goal(goal_id: int, goal_update: GoalUpdate, db: Session = Depends(get_db)):
+    db_goal = db.query(models.Goal).filter(models.Goal.id == goal_id).first()
+    if not db_goal:
+        raise HTTPException(status_code=404, detail="Goal event not found")
+        
+    if goal_update.scorer_id is not None:
+        db_goal.scorer_id = goal_update.scorer_id
+    if goal_update.assist_id is not None:
+        db_goal.assist_id = goal_update.assist_id
+    if goal_update.minute is not None:
+        db_goal.minute = goal_update.minute
+
+    db.commit()
+    db.refresh(db_goal)
+    return db_goal
+
+# =====================================================================
+# DELETE: REMOVE A GOAL (Offside / Disallowed Goal)
+# Automatically decrements the match score!
+# =====================================================================
+@app.delete("/goals/{goal_id}")
+def delete_goal(goal_id: int, db: Session = Depends(get_db)):
+    goal = db.query(models.Goal).filter(models.Goal.id == goal_id).first()
+    if not goal:
+        raise HTTPException(status_code=404, detail="Goal event not found")
+        
+    # Fetch the match to correct the scoreline live
+    match = db.query(models.Match).filter(models.Match.id == goal.match_id).first()
+    if match:
+        if goal.team_id == match.home_team_id:
+            match.home_goals = max(0, match.home_goals - 1)
+        elif goal.team_id == match.away_team_id:
+            match.away_goals = max(0, match.away_goals - 1)
+
+    db.delete(goal)
+    db.commit()
+    return {"message": "Goal removed and score reverted successfully"}
