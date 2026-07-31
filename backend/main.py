@@ -17,10 +17,20 @@ models.Base.metadata.create_all(bind=engine)
 # 2. INITIALIZE FASTAPI
 app = FastAPI(title="Westcubes Premier Football League API")
 
+# =====================================================================
+# CORS PRODUCTION CONFIGURATION
+# =====================================================================
+origins = [
+    "http://localhost:5173",          # Your local Vite development server
+    "http://127.0.0.1:5173",          # Alternative local address string
+    # REPLACE the line below with your actual GitHub Pages URL once it's created:
+    "https://your-github-username.github.io", 
+]
+
 # --- ADD THIS CORS BLOCK ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Your React frontend URL
+    allow_origins=origins, # Your React frontend URL
     allow_credentials=True,
     allow_methods=["*"], # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
