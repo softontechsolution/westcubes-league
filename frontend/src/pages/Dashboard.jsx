@@ -414,38 +414,41 @@ export default function Dashboard() {
                         onClick={() => setSelectedMatch(m)}
                         className={`p-4 rounded-xl border cursor-pointer transition-all ${getStatusStyles(m.status)}`}
                       >
-                        <div className="flex justify-between items-center">
-                          {/* LEFT SIDE INFO */}
-                          <div className="w-32 flex flex-col items-start shrink-0">
+                        {/* Responsive Layout: Stack on mobile, row on medium screens and up */}
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                          {/* TOP / LEFT SIDE INFO: Date & Status */}
+                          <div className="flex justify-between sm:w-32 sm:flex-col sm:items-start shrink-0 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-800/50">
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
                               {formatDate(m.match_date)}
                             </span>
-                            {m.status === "Live" && (
-                              <span className="flex items-center gap-1 text-[10px] font-bold text-red-500 animate-pulse">
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>{" "}
-                                LIVE
-                              </span>
-                            )}
-                            {m.status === "Finished" && (
-                              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                                FINAL
-                              </span>
-                            )}
-                            {m.status === "Scheduled" && (
-                              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
-                                PLANNED
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5">
+                              {m.status === "Live" && (
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-red-500 animate-pulse">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>{" "}
+                                  LIVE
+                                </span>
+                              )}
+                              {m.status === "Finished" && (
+                                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                                  FINAL
+                                </span>
+                              )}
+                              {m.status === "Scheduled" && (
+                                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                                  PLANNED
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           {/* CORE GAME CARD DISPLAY */}
-                          <div className="flex-1 flex items-center justify-center gap-4 px-2">
-                            <span className="font-semibold text-gray-200 truncate text-right w-28">
+                          <div className="flex-1 flex items-center justify-between sm:justify-center gap-2 sm:gap-4 px-1 sm:px-2 w-full">
+                            <span className="font-semibold text-gray-200 truncate text-right flex-1 sm:w-28 sm:flex-none text-xs sm:text-sm">
                               {m.home_team?.name || getTeamName(m.home_team_id)}
                             </span>
 
                             <div
-                              className={`flex items-center gap-2 font-black text-sm font-mono ${m.status !== "Scheduled" ? "bg-dark px-3 py-1 rounded border border-gray-800" : ""}`}
+                              className={`flex items-center gap-2 font-black text-xs sm:text-sm font-mono shrink-0 ${m.status !== "Scheduled" ? "bg-dark px-2 sm:px-3 py-1 rounded border border-gray-800" : ""}`}
                             >
                               {m.status === "Scheduled" ? (
                                 <span className="text-gray-500 text-xs font-medium tracking-widest italic">
@@ -476,7 +479,7 @@ export default function Dashboard() {
                               )}
                             </div>
 
-                            <span className="font-semibold text-gray-200 truncate text-left w-28">
+                            <span className="font-semibold text-gray-200 truncate text-left flex-1 sm:w-28 sm:flex-none text-xs sm:text-sm">
                               {m.away_team?.name || getTeamName(m.away_team_id)}
                             </span>
                           </div>
