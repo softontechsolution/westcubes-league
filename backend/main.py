@@ -24,7 +24,7 @@ origins = [
     "http://localhost:5173",          # Your local Vite development server
     "http://127.0.0.1:5173",          # Alternative local address string
     # REPLACE the line below with your actual GitHub Pages URL once it's created:
-    "https://your-github-username.github.io", 
+    "https://softontechsolution.github.io", 
 ]
 
 # --- ADD THIS CORS BLOCK ---
