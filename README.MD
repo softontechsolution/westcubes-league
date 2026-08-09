@@ -1,111 +1,600 @@
-Westcubes League Management System
-Westcubes League is a full-stack, real-time football management platform designed to provide a seamless Match Center for fans and an administrative hub for league operators. The application features live score polling, dynamic standings calculation, role-based access control, and a visual match event timeline.
+# ⚽ Westcubes League
 
-🚀 Key Features
-Real-time Match Center: Automatic 30-second polling to keep scores and statuses updated without page refreshes.
+### A modern full-stack sports league management platform for fixtures, match progression, team rosters, and real-time league standings.
 
-Dynamic Standings Matrix: Server-side logic that calculates points, goal differences, and rankings based on match outcomes.
+**Westcubes League** is a full-stack sports management platform designed to digitize the administration and public tracking of a football league.
 
-Role-Based Access Control (RBAC): Distinct administrative and public interfaces. Admins have full CRUD capabilities for teams, players, and match events.
+The platform provides a centralized system for managing teams, players, fixtures, match results, match progression, and league standings while providing supporters with a responsive interface for following the competition.
 
-Visual Event Timeline: A LiveScore-inspired event visualization component that renders goals, assists, and match milestones (HT/FT) chronologically.
+---
 
-Production-Ready Architecture: decoupled frontend/backend setup with support for cloud-hosted databases.
+## 🌐 Live Demo
 
-🏗️ Technical Stack
-Frontend
-Framework: React (Vite)
+### Frontend
 
-Styling: Tailwind CSS
+**[View Westcubes League](https://softontechsolution.github.io/westcubes-league/)**
 
-State Management: React useState & useEffect hooks
+### Architecture
 
-Routing: React Router v6
+```text
+                    ┌──────────────────────┐
+                    │       Users          │
+                    │ Supporters / Admins  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   React + Vite       │
+                    │    Frontend          │
+                    └──────────┬───────────┘
+                               │
+                               │ REST API
+                               ▼
+                    ┌──────────────────────┐
+                    │      FastAPI         │
+                    │     Backend API      │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     SQLAlchemy       │
+                    │         ORM          │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────┴───────────┐
+                    ▼                      ▼
+             ┌─────────────┐       ┌─────────────┐
+             │ PostgreSQL  │       │   SQLite    │
+             │   Neon      │       │ Development │
+             └─────────────┘       └─────────────┘
+```
 
-Backend
-Language: Python (FastAPI)
+---
 
-ORM: SQLAlchemy
+# 🎯 Project Overview
 
-Database: PostgreSQL (Neon.tech) / SQLite (Local Dev)
+Managing a football league involves more than simply displaying match scores.
 
-API Protocol: RESTful
+League administrators need to manage:
 
-🛠️ Getting Started
-Prerequisites
-Node.js (v20+)
+* Teams
+* Players
+* Squads
+* Fixtures
+* Match states
+* Goals
+* Results
+* League standings
+* Competition progression
 
-Python (v3.10+)
+Westcubes League was built to bring these processes into a centralized digital platform while giving supporters a simple way to follow the competition.
 
-Git
+---
 
-Local Development Setup
-Clone the repository:
+# ✨ Key Features
 
-Bash
-git clone https://github.com/your-username/westcubes-league.git
+## 🏟️ Match Center
+
+The Match Center provides a centralized view of league fixtures and match progression.
+
+It supports match states including:
+
+* 🟢 Live
+* 🟡 Scheduled
+* 🔵 Finished
+
+Match information can be refreshed to reflect changes in the current fixture.
+
+---
+
+## ⚽ Match Progression
+
+The platform supports the progression of matches from scheduled fixtures through completion.
+
+```text
+Scheduled
+    ↓
+Live
+    ↓
+Goals / Match Updates
+    ↓
+Finished
+    ↓
+League Table Updated
+```
+
+This creates a connected relationship between match results and competition standings.
+
+---
+
+## 🏆 League Standings
+
+The platform calculates and displays league standings based on competition results.
+
+Standings can represent:
+
+* Played matches
+* Wins
+* Draws
+* Losses
+* Goals scored
+* Goals conceded
+* Goal difference
+* Points
+
+The league table provides supporters with an immediate overview of the competition.
+
+---
+
+## 👥 Squad Management
+
+Teams have dedicated squad information containing:
+
+* Player names
+* Player profiles
+* Positions
+* Squad numbers
+* Team association
+
+This creates a structured digital representation of participating teams.
+
+---
+
+## 📱 Responsive Dashboard
+
+The interface follows a mobile-first approach and is optimized for:
+
+* Smartphones
+* Tablets
+* Laptops
+* Desktop displays
+
+The objective is to ensure that supporters can access league information regardless of their device.
+
+---
+
+# 🛠️ Technology Stack
+
+## Frontend
+
+| Technology   | Purpose                 |
+| ------------ | ----------------------- |
+| React        | UI development          |
+| Vite         | Frontend build tooling  |
+| Tailwind CSS | Styling & responsive UI |
+| JavaScript   | Application logic       |
+| GitHub Pages | Frontend deployment     |
+
+## Backend
+
+| Technology | Purpose                 |
+| ---------- | ----------------------- |
+| Python     | Backend development     |
+| FastAPI    | REST API framework      |
+| SQLAlchemy | Database ORM            |
+| Pydantic   | Data validation         |
+| Uvicorn    | ASGI application server |
+| Render     | Backend deployment      |
+
+## Database
+
+| Database        | Purpose                        |
+| --------------- | ------------------------------ |
+| Neon PostgreSQL | Production/serverless database |
+| SQLite          | Local development              |
+
+---
+
+# 🧩 Backend Architecture
+
+The backend is implemented as a RESTful FastAPI service.
+
+```text
+backend/
+│
+├── main.py
+│   └── Application entry point
+│
+├── database.py
+│   └── Database engine & sessions
+│
+├── models.py
+│   └── SQLAlchemy database models
+│
+├── schemas.py
+│   └── Pydantic validation schemas
+│
+└── requirements.txt
+    └── Python dependencies
+```
+
+The separation of application logic, database models, database configuration, and validation schemas keeps the backend organized and easier to extend.
+
+---
+
+# 🎨 Frontend Architecture
+
+The frontend is implemented using React and Vite.
+
+```text
+frontend/
+│
+├── src/
+│   ├── components/
+│   │   └── Reusable UI components
+│   │
+│   ├── App.jsx
+│   │   └── Root application
+│   │
+│   └── main.jsx
+│       └── React entry point
+│
+├── vite.config.js
+│   └── Vite configuration
+│
+└── package.json
+    └── Node dependencies & scripts
+```
+
+The frontend communicates with the FastAPI backend through REST API requests.
+
+---
+
+# 🔄 Data Flow
+
+A typical match update follows this architecture:
+
+```text
+League Data
+     ↓
+FastAPI Endpoint
+     ↓
+Pydantic Validation
+     ↓
+SQLAlchemy
+     ↓
+Database
+     ↓
+REST API Response
+     ↓
+React Frontend
+     ↓
+User Interface
+```
+
+This separation allows the frontend and backend to evolve independently.
+
+---
+
+# 🗄️ Database Strategy
+
+Westcubes League uses a flexible database configuration that supports different environments.
+
+### Production
+
+```text
+Neon PostgreSQL
+```
+
+### Local Development
+
+```text
+SQLite
+```
+
+The database driver can be configured through environment variables.
+
+If a production `DATABASE_URL` is available, the application connects to the configured PostgreSQL database.
+
+Otherwise, the application can use a local SQLite database for development.
+
+This approach makes local development lightweight while allowing the application to use a production-grade relational database.
+
+---
+
+# 📂 Project Structure
+
+```text
+westcubes-league/
+│
+├── backend/
+│   ├── main.py
+│   ├── database.py
+│   ├── models.py
+│   ├── schemas.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── vite.config.js
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Getting Started
+
+## Prerequisites
+
+Make sure you have installed:
+
+* Node.js 18+
+* Python 3.10+
+* Git
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/softontechsolution/westcubes-league.git
+
 cd westcubes-league
-Backend Setup:
+```
 
-Bash
+---
+
+# 🐍 2. Backend Setup
+
+Navigate to the backend:
+
+```bash
 cd backend
+```
+
+Create a Python virtual environment:
+
+```bash
+python3 -m venv venv
+```
+
+Activate it.
+
+### macOS / Linux
+
+```bash
+source venv/bin/activate
+```
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
+Start the FastAPI development server:
+
+```bash
 uvicorn main:app --reload
-Frontend Setup:
+```
 
-Bash
-cd ../frontend
+The API will be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+FastAPI's interactive API documentation can be accessed at:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+# ⚛️ 3. Frontend Setup
+
+Open another terminal.
+
+Navigate to the frontend:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
-🔐 Environment Configuration
-To switch between development and production, utilize the .env files located in the frontend root:
+```
 
-Development: .env.development
+The frontend will be available at:
 
-Code snippet
-VITE_API_BASE_URL=http://localhost:8000
-Production: .env.production
+```text
+http://localhost:5173
+```
 
-Code snippet
-VITE_API_BASE_URL=https://your-backend-api-url.onrender.com
-🚀 Deployment Pipeline
-Backend (Render)
-Push the backend code to a GitHub repository.
+---
 
-Link the repository to Render as a "Web Service".
+# 🔐 Environment Variables
 
-Set Environment Variable DATABASE_URL using your Neon PostgreSQL connection string.
+For production PostgreSQL connectivity, configure the backend environment:
 
-Deployment will automatically build using pip install -r requirements.txt.
+```env
+DATABASE_URL=postgresql://user:password@host:port/database_name
+```
 
-Frontend (GitHub Pages)
-Ensure vite.config.js includes your repo base path.
+If `DATABASE_URL` is not provided, the application can fall back to:
 
-Install gh-pages and update package.json with the deploy script:
+```text
+sqlite:///./westcubes_league.db
+```
 
-JSON
-"scripts": {
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist"
-}
-Run npm run deploy to push the static production build.
+### Security
 
-📝 Architecture Notes
-Database Persistence: We utilize Neon (Postgres) for cloud-hosted database persistence, ensuring data integrity across Render server restarts.
+Never commit credentials, passwords, database URLs containing secrets, or private API keys to GitHub.
 
-CORS Management: The FastAPI backend is configured with CORSMiddleware to allow specific cross-origin requests from the GitHub Pages-hosted frontend domain, maintaining security while enabling connectivity.
+Use environment variables for sensitive configuration.
 
-Performance: The dashboard uses Promise-based fetching (Promise.all) to load dependencies (teams, players, matches) in parallel, minimizing Time-to-Interactive (TTI).
+---
 
-🤝 Contribution Guidelines
-Fork the repository.
+# 🚀 Deployment
 
-Create a feature branch (git checkout -b feature/amazing-feature).
+## Backend — Render
 
-Commit your changes (git commit -m 'feat: added new match event type').
+The FastAPI backend can be deployed as a Render Web Service.
 
-Push to the branch (git push origin feature/amazing-feature).
+### Build Command
 
-Open a Pull Request.
+```bash
+pip install -r backend/requirements.txt
+```
 
-Built with ❤️ for Westcubes League.
+### Start Command
+
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+```
+
+Configure the production database under Render's environment variables.
+
+---
+
+## Frontend — GitHub Pages
+
+The React/Vite frontend is deployed through GitHub Pages.
+
+Build and deploy:
+
+```bash
+cd frontend
+
+npm run deploy
+```
+
+Live application:
+
+**https://softontechsolution.github.io/westcubes-league/**
+
+---
+
+# 📦 Deployment Architecture
+
+```text
+                    GitHub Repository
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+       GitHub Pages                  Render
+              │                         │
+              ▼                         ▼
+       React Frontend              FastAPI API
+                                        │
+                                        ▼
+                                  Neon PostgreSQL
+```
+
+---
+
+# 🧠 Engineering Concepts Demonstrated
+
+Westcubes League demonstrates practical experience with:
+
+* Full-stack application architecture
+* REST API development
+* React application development
+* FastAPI backend development
+* SQLAlchemy ORM
+* PostgreSQL
+* SQLite
+* Pydantic validation
+* API integration
+* Environment configuration
+* Responsive UI development
+* Cloud deployment
+* GitHub Pages
+* Render
+* Database abstraction
+* Separation of frontend and backend services
+
+---
+
+# 📈 Possible Future Improvements
+
+Potential future iterations could include:
+
+* 🔔 Push notifications
+* 📱 Progressive Web App support
+* 🏟️ Match event timeline
+* 📊 Advanced league statistics
+* ⚽ Player performance analytics
+* 🏆 Tournament management
+* 🔴 Live match commentary
+* 🔐 Admin authentication
+* 🖼️ Team logos and player photos
+* 📈 Historical season statistics
+* 📲 Mobile application
+* 🔌 Real-time WebSocket updates
+
+---
+
+# 📸 Screenshots
+
+Screenshots can be added here to showcase:
+
+### League Dashboard
+
+*Add screenshot here*
+
+### Match Center
+
+*Add screenshot here*
+
+### League Standings
+
+*Add screenshot here*
+
+### Team Squad
+
+*Add screenshot here*
+
+---
+
+# 📄 License
+
+This project is proprietary software developed by **Softon Tech Solution**.
+
+All rights reserved.
+
+---
+
+# 👨‍💻 Author
+
+## Emmanuel Joshua
+
+**Software Developer • Solution Architect • Digital Transformation Strategist**
+
+🌐 **Portfolio:**
+https://softontechsolution.github.io/
+
+💻 **GitHub:**
+https://github.com/softontechsolution
+
+---
+
+<p align="center">
+  <b>Westcubes League</b>
+  <br/>
+  A digital home for fixtures, teams, matches and league standings.
+  <br/><br/>
+  ⭐ Star the repository if you find the project interesting.
+</p>
