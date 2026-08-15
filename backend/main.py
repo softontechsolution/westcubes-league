@@ -24,7 +24,8 @@ origins = [
     "http://localhost:5173",          # Your local Vite development server
     "http://127.0.0.1:5173",          # Alternative local address string
     # REPLACE the line below with your actual GitHub Pages URL once it's created:
-    "https://softontechsolution.github.io", 
+    "https://softontechsolution.github.io",
+    "https://westcubes-league-psi.vercel.app",  # Your new Vercel frontend URL
 ]
 
 # --- ADD THIS CORS BLOCK ---
